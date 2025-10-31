@@ -14,7 +14,7 @@ const LikedVideo = () => {
       setError('');
 
       try {
-        const response = await axiosAuth.get(`/likes/videos`); 
+        const response = await axiosAuth.get(`/likes/videos`);     
 
         // 1. Get the main data object which contains 'likedVideos' and 'pagination'
         const responseData = response.data.data; 
@@ -79,4 +79,4 @@ const LikedVideo = () => {
   );
 };
 
-export default LikedVideo;
+export default LikedVideo; 

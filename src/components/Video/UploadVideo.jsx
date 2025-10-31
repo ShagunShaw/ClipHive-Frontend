@@ -172,7 +172,7 @@ const UploadVideo = () => {
     setUploadProgress(0);
     
     try {
-      const response = await axios.post(`${server}/videos`, formData, {
+      const response = await axios.post(`${server}/videos/upload-video`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${accessToken}`

@@ -13,8 +13,8 @@ const Login = () => {
   const [error, setError] = useState('');
   
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    password: '',
+    userIdentifier: ''
   });
 
   const handleInputChange = (e) => {
@@ -28,8 +28,12 @@ const Login = () => {
     e.preventDefault();
     
     // Validate form
-    if (!formData.email || !formData.password) {
-      setError('Email and password are required');
+    if(!formData.userIdentifier) {
+      setError('Email or username is required');
+      return;
+    }
+    if (!formData.password) {
+      setError('Password is required');
       return;
     }
 
@@ -39,8 +43,8 @@ const Login = () => {
     try {
       // Setting withCredentials: true allows cookies to be sent and received
       const response = await axios.post(`${server}/users/login`, {
-        email: formData.email,
         password: formData.password,
+        userIdentifier: formData.userIdentifier
       }, { 
         withCredentials: true // Important for cookie authentication
       });
@@ -115,11 +119,11 @@ const Login = () => {
               <FaEnvelope className="text-gray-500" />
             </div>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              name="userIdentifier"
+              value={formData.userIdentifier}
               onChange={handleInputChange}
-              placeholder="Email Address"
+              placeholder="Username or Email"
               className="w-full pl-10 pr-3 py-3 rounded-lg bg-[#212131] text-gray-300 outline-none"
             />
           </div>

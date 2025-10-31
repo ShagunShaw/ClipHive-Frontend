@@ -17,6 +17,7 @@ const VideoPlayer = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const [user, setUser] = useState({});         // For storing user data
 
   // Debug effect for authentication state
   useEffect(() => {
@@ -36,7 +37,7 @@ const VideoPlayer = () => {
      // console.log('Fetching video with auth state:', !!accessToken);
       
       try {
-        const response = await axios.get(`${server}/videos/${videoId}`, {
+        const response = await axios.get(`${server}/videos/get-video/${videoId}`, {
           headers: {
             Authorization: accessToken ? `Bearer ${accessToken}` : undefined
           }
@@ -46,7 +47,7 @@ const VideoPlayer = () => {
         // console.log('Video data from API:', response.data.data);
         // console.log('Response structure:', {
         //   responseData: response.data,
-        //   videoData: response.data.data,
+        //   videoData: response.data.data, 
         // });
         
         // Check if the API response contains likes information
@@ -62,16 +63,29 @@ const VideoPlayer = () => {
         
         // Set subscription state if available in the API response
         if (videoData.owner) {
-          // console.log('Video owner data:', {
-          //   id: videoData.owner._id,
-          //   fullName: videoData.owner.fullName,
-          //   isSubscribed: videoData.owner.isSubscribed,
-          //   subscribersCount: videoData.owner.subscribersCount
-          // });
-          
-          setIsSubscribed(!!videoData.owner.isSubscribed);
-          setSubscriberCount(videoData.owner.subscribersCount || 0);
-        } else {
+          const response2 = await axios.get(`${server}/subscriptions/${videoData.owner}/isSubscribed`, {
+            headers: {
+              Authorization: accessToken ? `Bearer ${accessToken}` : undefined
+            }
+          });
+          setIsSubscribed(response2.data.data);
+
+          const response3 = await axios.get(`${server}/subscriptions/getSubscribers`, {
+            headers: {
+              Authorization: accessToken ? `Bearer ${accessToken}` : undefined
+            }
+          });
+          setSubscriberCount(response3.data.data.count || 0);
+
+          const response4 = await axios.get(`${server}/users/${videoData.owner}`, {
+            headers: {
+              Authorization: accessToken ? `Bearer ${accessToken}` : undefined
+            }
+          });
+          setUser(response4.data.data);
+
+        } 
+        else {
           console.warn('Video owner data missing in API response');
         }
         
@@ -91,7 +105,7 @@ const VideoPlayer = () => {
   const handleLikeVideo = async () => {
     try {
       // Make API call to toggle like status
-      const response = await axios.post(`${server}/likes/toggle/v/${videoId}`, {}, {
+      const response = await axios.post(`${server}/likes/toggleVideoLike/${videoId}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -100,7 +114,7 @@ const VideoPlayer = () => {
       //console.log('Like toggle API response:', response.data);
       
       // After like operation, fetch the updated video details to get current like count from server
-      const videoResponse = await axios.get(`${server}/videos/${videoId}`, {
+      const videoResponse = await axios.get(`${server}/videos/get-video/${videoId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -110,6 +124,13 @@ const VideoPlayer = () => {
       //console.log('Updated video data after like:', updatedVideoData);
       
       // Update local state with server data
+      const Count = await axios.get(`${server}/likes/getVideoLikes/${videoId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+        }
+      });
+
+      setLikeCount(Count.data.data || 0);
       setVideo(updatedVideoData);
       setIsLiked(updatedVideoData.isLiked || !isLiked);
       
@@ -141,7 +162,7 @@ const VideoPlayer = () => {
     }
 
     // Double check channel ID is present
-    const channelId = video.owner._id;
+    const channelId = video.owner;
     if (!channelId) {
       console.error('Channel ID is missing', video.owner);
       alert('Channel ID not available. Please try again later.');
@@ -154,7 +175,7 @@ const VideoPlayer = () => {
     try {
       // Using the subscription toggle endpoint from API docs
       const response = await axios.post(
-        `${server}/subscriptions/c/${channelId}`, 
+        `${server}/subscriptions/toggleSubscription/${channelId}`, 
         {}, 
         {
           headers: {
@@ -174,9 +195,9 @@ const VideoPlayer = () => {
       // Temporarily update local state for immediate UI feedback
       setIsSubscribed(newSubscriptionState);
       setSubscriberCount(newSubscriptionState ? currentCount + 1 : Math.max(0, currentCount - 1));
-      
+
       // Fetch updated video data to refresh all information
-      const videoResponse = await axios.get(`${server}/videos/${videoId}`, {
+      const videoResponse = await axios.get(`${server}/videos/get-video/${videoId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -190,18 +211,24 @@ const VideoPlayer = () => {
       
       // Use server data for subscription status and count if available
       if (updatedVideoData.owner) {
-        const isSubscribedFromServer = !!updatedVideoData.owner.isSubscribed;
-        const subscribersFromServer = updatedVideoData.owner.subscribersCount || 0;
-        
-        // console.log('Subscription status from server:', {
-        //   isSubscribedFromServer,
-        //   subscribersFromServer
-        // });
+
+        const response2 = await axios.get(`${server}/subscriptions/${updatedVideoData.owner}/isSubscribed`, {
+          headers: {
+            Authorization: accessToken ? `Bearer ${accessToken}` : undefined
+          }
+        });
+        const isSubscribedFromServer = response2.data.data;
+
+        const response3 = await axios.get(`${server}/subscriptions/getSubscribers`, {
+          headers: {
+            Authorization: accessToken ? `Bearer ${accessToken}` : undefined
+          }
+        });
+        const subscribersFromServer = response3.data.data.count || 0;
         
         setIsSubscribed(isSubscribedFromServer);
         setSubscriberCount(subscribersFromServer);
       }
-      
     } catch (err) {
      // console.error('Error toggling subscription:', err);
       // Restore previous state on error
@@ -328,10 +355,7 @@ const VideoPlayer = () => {
                   onClick={handleLikeVideo}
                 >
                   <FaThumbsUp />
-                  <span>
-                    {/* Display likes from server data */}
-                    { video?.likeCount ?? video?.likes ?? 0 }
-                  </span>
+                  <span>{likeCount}</span>
                 </button>
                 
                 <button className="flex items-center gap-1">
@@ -357,15 +381,15 @@ const VideoPlayer = () => {
 
             <div className="flex items-start gap-4 py-4 border-t border-b border-gray-700">
               <img 
-                src={video.owner?.avatar}
-                alt={video.owner?.fullName}
+                src={user.avatar}
+                alt={user.fullName}
                 className="w-12 h-12 rounded-full object-cover"
               />
               
               <div className="flex-1">
-                <h3 className="text-lg font-medium">{video.owner?.fullName}</h3>
+                <h3 className="text-lg font-medium">{user.fullName}</h3>
                 <p className="text-gray-400 text-sm">
-                  {subscriberCount || video.owner?.subscribersCount || 0} subscribers
+                  {subscriberCount || user.subscribersCount || 0} subscribers
                 </p>
                 <p className="text-sm text-gray-300 mt-2 line-clamp-2">
                   {video.description}
@@ -423,4 +447,4 @@ const VideoPlayer = () => {
   );
 };
 
-export default VideoPlayer;
+export default VideoPlayer;  

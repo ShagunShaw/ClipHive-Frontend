@@ -16,7 +16,7 @@ const PlaylistGrid = () => {
       
       try {
         // Get the current user ID first
-        const userResponse = await axiosAuth.get(`${server}/users/current-user`, {
+        const userResponse = await axiosAuth.get(`/users/current-user`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`
           }
@@ -25,7 +25,7 @@ const PlaylistGrid = () => {
         const userId = userResponse.data.data._id;
         
         // Then fetch the user's playlists
-        const response = await axiosAuth.get(`${server}/playlists/user/${userId}`, {
+        const response = await axiosAuth.get(`/playlists/getAllPlaylistsOfUser/${userId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`
           }

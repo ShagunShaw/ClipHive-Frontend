@@ -104,7 +104,7 @@ const Signup = () => {
         // Auto-login after registration
         try {
           const loginResponse = await axios.post(`${server}/users/login`, {
-            email: formData.email,
+            userIdentifier: formData.email,
             password: formData.password,
           });
           

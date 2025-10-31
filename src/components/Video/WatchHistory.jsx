@@ -60,7 +60,7 @@ const WatchHistory = () => {
       setIsClearing(true);
       
       try {
-        await axiosAuth.delete('/users/watch-history');
+        await axiosAuth.delete('/users/watch-history');       // where is this route 
         //await freshAxios.delete('/users/watch-history');
         
         // Clear local state
@@ -80,7 +80,7 @@ const WatchHistory = () => {
   const removeFromHistory = async (videoId) => {
     try {
       //const freshAxios = getAxiosAuth();
-      await axiosAuth.delete(`/users/watch-history/${videoId}`);
+      await axiosAuth.delete(`/users/watch-history/${videoId}`);      // where is this route
 
       // Remove from local state
       setHistoryVideos(prev => prev.filter(video => video._id !== videoId));

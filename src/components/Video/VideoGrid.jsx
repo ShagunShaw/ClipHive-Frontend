@@ -56,7 +56,7 @@ const serializedParams = JSON.stringify(params);
          // const freshAxiosAuth = axiosAuth();
           
           // Use the fresh instance for the request
-          response = await axiosAuth.get(`${endpoint}`, {
+          response = await axiosAuth.get(`${endpoint}/get-all-videos`, {
             params: { ...params, limit, page: 1, sortBy: params.sortBy || 'createdAt', sortType: params.sortType || 'desc' },
           });
           console.log("Request successful using fresh axiosAuth instance");
@@ -64,7 +64,7 @@ const serializedParams = JSON.stringify(params);
           console.warn("axiosAuth request failed, falling back to manual token handling", authError);
           
           // Fallback to direct axios with manual token if axiosAuth fails
-          response = await axios.get(`${server}${endpoint}?${queryParams}`, {
+          response = await axios.get(`${server}${endpoint}/get-all-videos?${queryParams}`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
               'Content-Type': 'application/json'

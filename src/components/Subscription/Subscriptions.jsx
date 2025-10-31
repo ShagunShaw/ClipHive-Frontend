@@ -36,7 +36,7 @@ const Subscriptions = () => {
     
     try {
       // Get the current user's ID first
-      const userResponse = await axiosAuth.get(`${server}/users/current-user`);
+      const userResponse = await axiosAuth.get(`/users/current-user`);
       //console.log('Current user response:', userResponse.data);
       const userId = userResponse.data.data._id;
       
@@ -47,7 +47,7 @@ const Subscriptions = () => {
       }
       
       // Fetch subscribed channels using the user's ID
-      const response = await axiosAuth.get(`${server}/subscriptions/u/${userId}?page=${page}&limit=12`);
+      const response = await axiosAuth.get(`/subscriptions/getSubscriptions`);    // the actual route has been changed here
       
       //console.log('Subscribed channels response:', response.data);
       
@@ -126,7 +126,7 @@ const Subscriptions = () => {
       
       // Make the API call to toggle subscription (which will unsubscribe in this case)
       // Based on the controller code, this endpoint toggles subscription status
-      const response = await axios.post(`${server}/subscriptions/c/${channelId}`);
+      const response = await axios.post(`${server}/subscriptions/toggleSubscription/${channelId}`);
       //console.log('Unsubscribe response:', response.data);
       
       // Check if unsubscribe was successful

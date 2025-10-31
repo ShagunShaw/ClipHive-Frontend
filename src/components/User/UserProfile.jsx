@@ -33,7 +33,7 @@ const UserProfile = () => {
 
     setIsSubmitting(true);
     try {
-      await axios.post(`${server}/subscriptions/c/${channelData._id}`, {}, {
+      await axios.post(`${server}/subscriptions/toggleSubscription/${channelData._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }

@@ -36,14 +36,8 @@ const CommentsList = ({ videoId }) => {
 
     try {
       // Use the imported axiosAuth instance directly
-      const response = await axiosAuth.get(`${server}/comments/${videoId}`, {
-        params: {
-          page: currentPage,
-          limit: 10,
-          sortBy: sortOption === 'newest' ? 'createdAt' : 'likes',
-          sortType: 'desc'
-        }
-      });
+      const response = await axiosAuth.get(`/comments/getComments/${videoId}`);
+      const commentCount = response.data.data.comments.length;
 
       // Get the main data object
       const data = response.data.data;
@@ -55,7 +49,7 @@ const CommentsList = ({ videoId }) => {
       const newComments = data.comments || []; 
       
       // Use the correct key 'totalComments' for the count
-      setCommentCount(pagination.totalComments || 0);
+      setCommentCount(commentCount || 0);
 
       // Update comments state (this part was correct)
       if (reset) {

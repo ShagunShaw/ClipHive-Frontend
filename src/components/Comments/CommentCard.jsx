@@ -41,6 +41,7 @@ const CommentCard = ({ comment }) => {
   const [replyContent, setReplyContent] = useState('');
   const [replies, setReplies] = useState(comment.replies || []);
   const [showReplies, setShowReplies] = useState(false);
+  const [user, setUser] = useState(comment.ownerDetails || {}); 
   
   // REMOVED: profileData state
   // REMOVED: useSelector hook
@@ -48,7 +49,7 @@ const CommentCard = ({ comment }) => {
 
   const handleLikeComment = async () => {
     try {
-      await axiosAuth.post(`${server}/likes/toggle/c/${comment._id}`, {}, {
+      await axiosAuth.post(`/likes/toggleCommentLike/${comment._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
@@ -66,7 +67,8 @@ const CommentCard = ({ comment }) => {
     if (!replyContent.trim()) return;
     
     try {
-      const response = await axiosAuth.post(`${server}/comments/${comment.video}`, {
+      console.log("comment:", comment);
+      const response = await axiosAuth.post(`/comments/addComment/${comment.video}`, {      
         content: replyContent,
         parentComment: comment._id
       }, {
@@ -89,7 +91,7 @@ const CommentCard = ({ comment }) => {
   
   // UNCOMMENTED: This uses the comment owner's username for navigation
   const handleUserClick = () => {
-     navigate(`/channel/${comment.owner?.username}`);
+     navigate(`/channel/${comment.owner?.username}`);     
   };
   
   //console.log(comment.ownerDetails);
@@ -103,10 +105,10 @@ const CommentCard = ({ comment }) => {
          // onClick={handleUserClick} // UNCOMMENTED
         >
           <img
-            // FIXED: Use comment.owner.avatar
-            src={comment.ownerDetails?.avatar} 
-            // FIXED: Use comment.owner.fullName
-            alt={comment.ownerDetails?.fullName} 
+            // FIXED: Use comment.ownerDetails.avatar
+            src={comment.ownerDetails?.avatar  || 'https://e7.pngegg.com/pngimages/10/205/png-clipart-computer-icons-error-information-error-angle-triangle-thumbnail.png'} 
+            // FIXED: Use comment.ownerDetails.fullName
+            alt={comment.ownerDetails?.fullName || 'User not found'} 
             className="w-10 h-10 rounded-full object-cover cursor-pointer"
           />
         </div>
@@ -120,7 +122,7 @@ const CommentCard = ({ comment }) => {
               onClick={handleUserClick} // UNCOMMENTED
             >
               {/* This was already correct */}
-              {comment.owner?.fullName} 
+              {comment.ownerDetails?.fullName} 
             </span>
             <span className="text-gray-400 text-xs">
               {timeAgo(comment.createdAt)}

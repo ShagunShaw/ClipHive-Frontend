@@ -52,7 +52,7 @@ const VideoCard = ({ video }) => {
           throw new Error("Username not available in video owner details");
         }
         
-        const response = await axios.get(`/users/channel/${username}`);
+        const response = await axios.get(`${server}/users/channel/${username}`);
         setChannelDetails(response.data.data);
       } catch (err) {
         console.error('Error fetching channel details:', err);

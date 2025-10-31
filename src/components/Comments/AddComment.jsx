@@ -33,7 +33,7 @@ const AddComment = ({ videoId, onCommentAdded }) => {
           withCredentials: true
         });
         
-        
+
         
         if (response.data?.data) {
           setProfileData(response.data.data);
@@ -55,7 +55,7 @@ const AddComment = ({ videoId, onCommentAdded }) => {
     
     // Check for login status
     if (!isLoggedIn) {
-      navigate('/login');
+      navigate(`/login`);
       return;
     }
     
@@ -64,10 +64,8 @@ const AddComment = ({ videoId, onCommentAdded }) => {
     
     try {
       // Get a fresh axios instance with current token
-      
-      
-      const response = await axiosAuth.post(`/comments/${videoId}`, { content });
-      
+      const response = await axiosAuth.post(`/comments/addComment/${videoId}`, { content });
+
       // Reset form
       setContent('');
       
@@ -149,7 +147,7 @@ const AddComment = ({ videoId, onCommentAdded }) => {
           ) : (
             <button
               type="button"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate(`/login`)}
               className="px-3 py-1.5 text-sm bg-[#ff3b5c] hover:bg-[#e02d53] rounded-full transition-colors"
             >
               Login to Comment
