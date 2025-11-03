@@ -58,7 +58,16 @@ const VideoGrid = ({ title, endpoint, params = {}, limit = 12, source = "home" }
 
             setVideos(responseData || []);
             setPagination(responseData.pagination || {});
-          } else {
+          } 
+          else if(source === 'trending') {
+            response = await axiosAuth.get(`${endpoint}/trending-videos?${queryParams}`);
+
+            const responseData = response.data.data;
+
+            setVideos(responseData.videos || []);
+            setPagination(responseData.pagination || {});
+          }
+          else {
             response = await axiosAuth.get(`${endpoint}/get-all-videos?${queryParams}`);
 
             const responseData = response.data.data;
@@ -82,7 +91,20 @@ const VideoGrid = ({ title, endpoint, params = {}, limit = 12, source = "home" }
 
             setVideos(responseData || []);
             setPagination(responseData.pagination || {});
-          } else {
+          }
+          else if(source === 'trending') {
+            response = await axios.get(`${server}${endpoint}/trending-videos?${queryParams}`, {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              }
+            });
+
+            const responseData = response.data.data;
+
+            setVideos(responseData || []);
+            setPagination(responseData.pagination || {});
+          }
+          else {
             response = await axios.get(`${server}${endpoint}/get-all-videos?${queryParams}`, {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
@@ -172,7 +194,7 @@ const VideoGrid = ({ title, endpoint, params = {}, limit = 12, source = "home" }
             ))
           ) : (
             <div className="text-gray-500 col-span-full text-center py-8">
-              No videos uploaded
+              No videos uploaded 
             </div>
           )}
         </div>

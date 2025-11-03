@@ -6,6 +6,7 @@ import { store } from './redux/store'
 import './index.css'
 import App from './App.jsx'
 import HomePage from './components/Home/HomePage.jsx'
+import TrendingPage from './components/Home/TrendingVideos.jsx'
 import VideoPlayer from './components/Video/VideoPlayer.jsx'
 import UserProfile from './components/User/UserProfile.jsx'
 import Login from './components/Auth/Login.jsx'
@@ -52,6 +53,13 @@ createRoot(document.getElementById('root')).render(
           <Route path="/home" element={
             <Navigate to="/" replace />
           } />
+
+          <Route path="/trending" element={
+            <App>
+              <TrendingPage />
+            </App>
+          } />
+
           <Route path="/watch/:videoId" element={
             <App>
               <VideoPlayer />

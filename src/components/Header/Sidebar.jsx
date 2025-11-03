@@ -90,7 +90,7 @@ const Sidebar = () => {
 
   const mainMenuItems = [
     { icon: <FaHome className="text-xl" />, label: 'Home', path: '/' },
-    { icon: <FaFire className="text-xl" />, label: 'Trending', path: '/home?sort=trending' },
+    { icon: <FaFire className="text-xl" />, label: 'Trending', path: '/trending' },
     { icon: <FaPlay className="text-xl" />, label: 'Subscriptions', path: '/subscriptions' },
   ];
 
