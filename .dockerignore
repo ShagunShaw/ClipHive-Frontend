@@ -1,0 +1,11 @@
+README.md
+API_DOC.md
+
+node_modules/
+.vscode/
+.git
+
+doubts.txt
+
+# Build output (we don’t want old builds to be copied)
+dist/

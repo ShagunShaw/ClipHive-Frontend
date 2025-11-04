@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 .env
 *.env
+
+# Files created for my own use
+doubts.txt
